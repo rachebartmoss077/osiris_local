@@ -35,6 +35,7 @@ import { toShape, queryRing, type DrawMode, type DrawnShape, type DrawProgress, 
 import { selectInPolygon } from '@/lib/aoi';
 import { diffSweep, appendEvents, type WatchBaseline, type WatchEvent } from '@/lib/watch';
 import { STORAGE_KEY, serializeShapes, deserializeShapes, shapesToGeoJSON, downloadFile } from '@/lib/aoi-export';
+import { TvWallModeIndicator, useTvWallState } from '@/features/tv-wall';
 const TokenPanel = dynamic(() => import('@/components/TokenPanel'));
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -98,6 +99,7 @@ function getYouTubeWatchUrl(url: string): string {
 }
 
 export default function Dashboard() {
+  const tvWall = useTvWallState();
   const dataRef = useRef<any>({});
   const [dataVersion, setDataVersion] = useState(0);
   const data = dataRef.current;
@@ -333,7 +335,8 @@ export default function Dashboard() {
     if (urlTimer.current) clearTimeout(urlTimer.current);
     urlTimer.current = setTimeout(() => {
       const active = Object.entries(activeLayers).filter(([,v]) => v).map(([k]) => k).join(',');
-      const url = `${window.location.pathname}?layers=${active}`;
+      const wall = new URLSearchParams(window.location.search).get('wall') === '1' ? '&wall=1' : '';
+      const url = `${window.location.pathname}?layers=${active}${wall}`;
       window.history.replaceState(null, '', url);
     }, 1500);
   }, [activeLayers]);
@@ -796,6 +799,8 @@ export default function Dashboard() {
 
   return (
     <main className="fixed inset-0 w-full h-full bg-[var(--bg-void)] overflow-hidden">
+
+      <TvWallModeIndicator state={tvWall} />
 
       {/* ── SPLASH ── */}
       <AnimatePresence>
