@@ -35,7 +35,7 @@ import { toShape, queryRing, type DrawMode, type DrawnShape, type DrawProgress, 
 import { selectInPolygon } from '@/lib/aoi';
 import { diffSweep, appendEvents, type WatchBaseline, type WatchEvent } from '@/lib/watch';
 import { STORAGE_KEY, serializeShapes, deserializeShapes, shapesToGeoJSON, downloadFile } from '@/lib/aoi-export';
-import { TvWallModeIndicator, useTvWallState } from '@/features/tv-wall';
+import { TvWallModeIndicator, useTvSceneController, useTvWallState, type MapController } from '@/features/tv-wall';
 const TokenPanel = dynamic(() => import('@/components/TokenPanel'));
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -100,6 +100,7 @@ function getYouTubeWatchUrl(url: string): string {
 
 export default function Dashboard() {
   const tvWall = useTvWallState();
+  const [tvMapController, setTvMapController] = useState<MapController | null>(null);
   const dataRef = useRef<any>({});
   const [dataVersion, setDataVersion] = useState(0);
   const data = dataRef.current;
@@ -231,6 +232,12 @@ export default function Dashboard() {
   const [drawnPolygons, setDrawnPolygons] = useState<DrawnShape[]>([]);
   const [demoMode, setDemoMode] = useState(false);
   const [osirisTheme, setOsirisTheme] = useState<'core'|'ghost'>('core');
+
+  useTvSceneController({
+    enabled: tvWall.enabled && !followUser && !navSession && !demoMode,
+    mode: tvWall.mode,
+    controller: tvMapController,
+  });
 
   useEffect(() => {
     document.body.className = osirisTheme === 'core' ? '' : `theme-${osirisTheme}`;
@@ -1002,6 +1009,7 @@ export default function Dashboard() {
           key={osirisTheme}
           data={data} 
           activeLayers={activeLayers} 
+          onControllerReady={setTvMapController}
           projection={mapProjection} 
           mapStyle={mapStyle === 'satellite' ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}' : 'dark'} 
           onEntityClick={handleEntityClick} 
