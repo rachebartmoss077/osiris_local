@@ -1,3 +1,4 @@
+export { TvWallDashboard } from './components/TvWallDashboard';
 export { TvWallModeIndicator } from './components/TvWallModeIndicator';
 export { useTvSceneController } from './hooks/useTvSceneController';
 export { useTvWallState } from './hooks/useTvWallState';
@@ -9,3 +10,10 @@ export {
 } from './state/tvWallReducer';
 export type { TvWallMode, TvWallState } from './types/state';
 export type { SceneCamera, TvScene } from './types/scene';
+export type {
+  TvBriefItem,
+  TvHotspot,
+  TvTickerItem,
+  TvWatchMetric,
+  TvWatchStatus,
+} from './types/dashboard';

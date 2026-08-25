@@ -1,12 +1,14 @@
 import { describe, expect, it, vi } from 'vitest';
+import type { LngLat } from 'maplibre-gl';
 import { createOsirisMapController } from './createOsirisMapController';
 
 function createMapMock() {
   const map = {
     flyTo: vi.fn(),
     easeTo: vi.fn(),
+    resize: vi.fn(),
     stop: vi.fn(),
-    getCenter: vi.fn(() => ({ lng: 12, lat: 34 })),
+    getCenter: vi.fn(() => ({ lng: 12, lat: 34 } as LngLat)),
     getZoom: vi.fn(() => 4),
     getPitch: vi.fn(() => 20),
     getBearing: vi.fn(() => -15),
@@ -41,11 +43,13 @@ describe('createOsirisMapController', () => {
     expect(map.easeTo).toHaveBeenCalledWith(expected);
   });
 
-  it('delegates stop and exposes movement and camera snapshots', () => {
+  it('delegates resize and stop and exposes movement and camera snapshots', () => {
     const map = createMapMock();
     const { controller } = createOsirisMapController(map);
 
+    controller.resize();
     controller.stop();
+    expect(map.resize).toHaveBeenCalledOnce();
     expect(map.stop).toHaveBeenCalledOnce();
     expect(controller.isMoving()).toBe(true);
     expect(controller.getView()).toEqual({
@@ -62,10 +66,12 @@ describe('createOsirisMapController', () => {
 
     binding.destroy();
     binding.controller.flyTo({ center: [0, 0], zoom: 2 });
+    binding.controller.resize();
     binding.controller.stop();
 
     expect(map.stop).toHaveBeenCalledOnce();
     expect(map.flyTo).not.toHaveBeenCalled();
+    expect(map.resize).not.toHaveBeenCalled();
     expect(binding.controller.isMoving()).toBe(false);
   });
 });

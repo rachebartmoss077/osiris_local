@@ -35,7 +35,7 @@ import { toShape, queryRing, type DrawMode, type DrawnShape, type DrawProgress, 
 import { selectInPolygon } from '@/lib/aoi';
 import { diffSweep, appendEvents, type WatchBaseline, type WatchEvent } from '@/lib/watch';
 import { STORAGE_KEY, serializeShapes, deserializeShapes, shapesToGeoJSON, downloadFile } from '@/lib/aoi-export';
-import { TvWallModeIndicator, useTvSceneController, useTvWallState, type MapController } from '@/features/tv-wall';
+import { TvWallDashboard, TvWallModeIndicator, useTvSceneController, useTvWallState, type MapController } from '@/features/tv-wall';
 const TokenPanel = dynamic(() => import('@/components/TokenPanel'));
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -233,8 +233,10 @@ export default function Dashboard() {
   const [demoMode, setDemoMode] = useState(false);
   const [osirisTheme, setOsirisTheme] = useState<'core'|'ghost'>('core');
 
+  const tvAutopilotActive = tvWall.enabled && tvWall.mode === 'autopilot' && !followUser && !navSession && !demoMode;
+
   useTvSceneController({
-    enabled: tvWall.enabled && !followUser && !navSession && !demoMode,
+    enabled: tvAutopilotActive,
     mode: tvWall.mode,
     controller: tvMapController,
   });
@@ -1004,8 +1006,9 @@ export default function Dashboard() {
 
 
       {/* ── MAP ── */}
-      <ErrorBoundary name="Map">
-        <OsirisMap 
+      <TvWallDashboard active={tvAutopilotActive} controller={tvMapController} systemStatus={backendStatus}>
+        <ErrorBoundary name="Map">
+          <OsirisMap
           key={osirisTheme}
           data={data} 
           activeLayers={activeLayers} 
@@ -1039,8 +1042,9 @@ export default function Dashboard() {
           onDrawComplete={handleDrawComplete}
           drawnPolygons={drawnPolygons}
           aircraftAirports={aircraftAirports}
-        />
-      </ErrorBoundary>
+          />
+        </ErrorBoundary>
+      </TvWallDashboard>
 
       {/* ── DIRECTIONS — opens beside the right-hand tool rail ── */}
       <div

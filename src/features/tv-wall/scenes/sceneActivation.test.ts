@@ -7,8 +7,9 @@ function createControllerMock(): MapController {
   return {
     flyTo: vi.fn(),
     easeTo: vi.fn(),
+    resize: vi.fn(),
     stop: vi.fn(),
-    getView: vi.fn(() => ({ center: [0, 0], zoom: 2, pitch: 0, bearing: 0 })),
+    getView: vi.fn(() => ({ center: [0, 0] as [number, number], zoom: 2, pitch: 0, bearing: 0 })),
     isMoving: vi.fn(() => false),
   };
 }

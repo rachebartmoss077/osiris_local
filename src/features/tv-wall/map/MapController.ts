@@ -10,6 +10,7 @@ export interface CameraSnapshot {
 export interface MapController {
   flyTo(camera: SceneCamera): void;
   easeTo(camera: SceneCamera): void;
+  resize(): void;
   stop(): void;
   getView(): CameraSnapshot;
   isMoving(): boolean;

@@ -4,7 +4,7 @@ import type { CameraSnapshot, MapController } from './MapController';
 
 type MapControllerTarget = Pick<
   MapLibreMap,
-  'flyTo' | 'easeTo' | 'stop' | 'getCenter' | 'getZoom' | 'getPitch' | 'getBearing' | 'isMoving'
+  'flyTo' | 'easeTo' | 'resize' | 'stop' | 'getCenter' | 'getZoom' | 'getPitch' | 'getBearing' | 'isMoving'
 >;
 
 export interface OsirisMapControllerBinding {
@@ -48,6 +48,9 @@ export function createOsirisMapController(
     },
     easeTo(camera) {
       if (active) map.easeTo(toCameraOptions(camera));
+    },
+    resize() {
+      if (active) map.resize();
     },
     stop() {
       if (active) map.stop();
